@@ -64,7 +64,24 @@ We then try to minimize the Gram matrix from the original image and the Gram mat
 We construct total loss function and use it for gradient descent, which is necessary to recalculate weights and biases in the network in each step.
 The alpha and beta constants are here to denote the intensity of both content and style.
 
-Full presentation:
+The larger image, the more time and memory you need to “allocate”, for the network to compute. The GPU and CUDA technology did not allow me to use images in FullHD, caused errors that are going to be mentioned further, so I had to limit myself to safe image size of 400x400.
+
+The more epochs and steps you assign, the more stylized and abstract the image you are going to obtain, which is quite obvious, because it is the number of times you run the loss function and provide it to the gradient descent “tweaking” the image a little.
+Most of the tests were done on the 10 epochs 100 steps. Maybe if I used more epochs, then the effects would be more optimistic.
+
+During my development process I have found out that doing calculation on GPU makes the entire process faster exponentially.
+But it was tricky for me to install the optimal versions of graphics drivers and remove the newest ones since tensorflow development does not follow driver development instantly. It also required some tweaking in system32 folders, changing the PATH variable and even moving files by hand since the installation does not put everything necessary in the right places. 
+It really took some time to set it up, but it was worth it. Before I set up CUDA each step took up to 10 seconds to finish, while after CUDA it got almost instant which made me able to run the gradient descent over the image in way more epochs that I used to in reasonable time.
+
+Changing the size of the images obviously increases the number of time the algorithm spends on the execution. But that wasn’t the only issue for me, I believe that due to limited VRAM on my graphics card I am not able to run the algorithm over the fullHD images. 
+For this project I have used NVIDIA GTX 1050 Ti which has only 4GB of VRAM, and despite that, the tensorflow warned that it might be too little. 
+Even when I run the program over the compressed images of size 400x400, then I still find allocator errors that requires me to free more VRAM (There were no such issues with CPU).
+The program then crashes when it tries to do some calculation over the tensor. But I haven’t been able to tell whether that is the case.
+
+The NST is a very promising technology, but it might require more experiments to do it right. Every image requires some tweaking before you learn how to establish optimal parameters so that it looks good.
+I have also found out that the algorithm is more effective when given an image resembling texture, rather than image. I have also found out that the parameters that matter the most are learning rate and the style weights.
+
+Full presentation with examples for the given parameters:
 https://docs.google.com/presentation/d/1M5cWEs8XVTIjdfhi8BjsWM0x0yVC7KTQUon9An-NmQA/edit?usp=sharing
 
 Sources:
